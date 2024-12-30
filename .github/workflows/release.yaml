@@ -1,0 +1,197 @@
+name: "📦 Release"
+on:
+  # Make a release whenever the developer wants.
+  workflow_dispatch:
+    inputs:
+      bump:
+        type: choice
+        description: "version bump method: major, minor, or patch"
+        required: true
+        default: "patch"
+        options:
+          - major
+          - minor
+          - patch
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - name: 🧾 Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_BASIC }}
+          lfs: true
+          submodules: "recursive"
+          fetch-depth: 0 # So we can get all tags.
+
+      - uses: actions/setup-dotnet@v4
+        name: 💽 Setup .NET SDK
+        with:
+          # Use the .NET SDK from global.json in the root of the repository.
+          global-json-file: global.json
+
+      - name: 🌍 Install dependencies
+        run: dotnet restore
+
+      - name: 📦 Build for macOS
+        run: |
+          chmod +x ./build.sh
+          ./build.sh macos
+
+      - name: ⬆️ Upload macOS artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-artifacts
+          path: ./addons/platform/builds/macos
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: 🧾 Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_BASIC }}
+          lfs: true
+          submodules: "recursive"
+          fetch-depth: 0 # So we can get all tags.
+
+      - uses: actions/setup-dotnet@v4
+        name: 💽 Setup .NET SDK
+        with:
+          # Use the .NET SDK from global.json in the root of the repository.
+          global-json-file: global.json
+
+      - name: 🌍 Install dependencies
+        run: dotnet restore
+
+      - name: 📦 Build for Windows
+        run: |
+          chmod +x ./build.sh
+          ./build.sh windows
+
+      - name: ⬆️ Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-artifacts
+          path: ./addons/platform/builds/windows
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🧾 Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_BASIC }}
+          lfs: true
+          submodules: "recursive"
+          fetch-depth: 0 # So we can get all tags.
+
+      - uses: actions/setup-dotnet@v4
+        name: 💽 Setup .NET SDK
+        with:
+          # Use the .NET SDK from global.json in the root of the repository.
+          global-json-file: global.json
+
+      - name: 🌍 Install dependencies
+        run: dotnet restore
+
+      - name: 📦 Build for Linux
+        run: |
+          chmod +x ./build.sh
+          ./build.sh linux
+
+      - name: ⬆️ Upload Linux artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-artifacts
+          path: ./addons/platform/builds/linux
+
+  consolidate-artifacts:
+    runs-on: ubuntu-latest
+    needs:
+      - build-macos
+      - build-windows
+      - build-linux
+    steps:
+      - name: 🧾 Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_BASIC }}
+          lfs: true
+          submodules: "recursive"
+          fetch-depth: 0 # So we can get all tags.
+
+      - name: Download macOS artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-artifacts
+          path: ./addons/platform/builds/macos
+
+      - name: Download Windows artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-artifacts
+          path: ./addons/platform/builds/windows
+
+      - name: Download Linux artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-artifacts
+          path: ./addons/platform/builds/linux
+
+      - name: Upload consolidated artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: platform
+          path: ./addons/platform
+
+  create-release:
+    runs-on: ubuntu-latest
+    needs: consolidate-artifacts
+    steps:
+      - name: 🧾 Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_BASIC }}
+          lfs: true
+          submodules: "recursive"
+          fetch-depth: 0 # So we can get all tags.
+
+      - name: 🔎 Read Current Project Version
+        id: current-version
+        uses: WyriHaximus/github-action-get-previous-tag@v1
+        with:
+          fallback: "0.0.0-devbuild"
+
+      - name: 🖨 Print Current Version
+        run: |
+          echo "Current Version: ${{ steps.current-version.outputs.tag }}"
+
+      - name: 🧮 Compute Next Version
+        uses: chickensoft-games/next-godot-csproj-version@v1
+        id: next-version
+        with:
+          project-version: ${{ steps.current-version.outputs.tag }}
+          # This action was designed to pin versions to Godot versions, but
+          # if you pass a stable version in it just bumps the project version
+          # that you give it.
+          godot-version: 1.0.0
+          bump: ${{ inputs.bump }}
+
+      - name: Download consolidated artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: platform
+          path: ./platform
+
+      - name: ✨ Create Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_BASIC }}
+        run: |
+          zip -r ./platform.zip ./platform
+
+          version="${{ steps.next-version.outputs.version }}"
+
+          gh release create --title "v$version" --generate-notes "$version" \
+            ./platform.zip

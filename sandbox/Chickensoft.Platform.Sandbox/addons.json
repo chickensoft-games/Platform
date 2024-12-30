@@ -1,0 +1,9 @@
+{
+  "$schema": "https://chickensoft.games/schemas/addons.schema.json",
+  "addons": {
+    "platform": {
+      "source": "symlink",
+      "url": "../../addons/platform"
+    }
+  }
+}
