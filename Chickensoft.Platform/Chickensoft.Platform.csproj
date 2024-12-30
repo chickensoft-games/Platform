@@ -1,0 +1,94 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsAotCompatible>true</IsAotCompatible>
+    <PublishAot>true</PublishAot>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <StripSymbols>false</StripSymbols>
+
+    <RootNamespace>Chickensoft.Platform</RootNamespace>
+
+    <!-- <PublishAotUsingRuntimePack>true</PublishAotUsingRuntimePack> -->
+    <!-- <NativeLib>static</NativeLib>
+    <Optimized Condition="'$(Configuration)' == 'Release'">true</Optimized> -->
+    <ProcessedRuntimeIdentifier>$([System.String]::Copy('$(RuntimeIdentifier)').Replace('-', '.'))</ProcessedRuntimeIdentifier>
+    <ProcessedConfiguration Condition="'$(Configuration)' == 'Debug'">.debug</ProcessedConfiguration>
+    <ProcessedConfiguration Condition="'$(Configuration)' == 'Release'"></ProcessedConfiguration>
+    <AssemblyName>Platform</AssemblyName>
+    <AssemblyName Condition="$(RuntimeIdentifier) != ''">Platform$(ProcessedConfiguration).$(ProcessedRuntimeIdentifier)</AssemblyName>
+
+    <!-- To show generated files -->
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>.generated</CompilerGeneratedFilesOutputPath>
+
+    <Title>Platform</Title>
+    <Version>0.0.0-devbuild</Version>
+    <Description>Platform-specific native extensions for Godot, written in C# and compiled ahead ahead-of-time (AOT).</Description>
+    <Copyright>© 2024 Chickensoft</Copyright>
+    <Authors>Chickensoft</Authors>
+    <Company>Chickensoft</Company>
+
+    <PackageId>Chickensoft.Platform</PackageId>
+    <PackageReleaseNotes>Platform release.</PackageReleaseNotes>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageTags>state management;bloc;godot;game;state machine</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/chickensoft-games/Platform</PackageProjectUrl>
+
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>git@github.com:chickensoft-games/Platform.git</RepositoryUrl>
+  </PropertyGroup>
+
+  <!-- Platform Constants -->
+  <!-- macOS -->
+  <PropertyGroup Condition="$(RuntimeIdentifier.StartsWith('osx'))">
+    <DefineConstants>$(DefineConstants);PLATFORM_MACOS</DefineConstants>
+  </PropertyGroup>
+  <!-- Linux -->
+  <PropertyGroup Condition="$(RuntimeIdentifier.StartsWith('linux'))">
+    <DefineConstants>$(DefineConstants);PLATFORM_LINUX</DefineConstants>
+  </PropertyGroup>
+  <!-- Android -->
+  <!-- <PropertyGroup Condition="$(RuntimeIdentifier.StartsWith('android'))">
+    <DefineConstants>$(DefineConstants);PLATFORM_ANDROID</DefineConstants>
+    <TargetFramework>net9.0-android</TargetFramework>
+  </PropertyGroup> -->
+  <!-- macOS Catalyst -->
+  <!-- <PropertyGroup Condition="$(RuntimeIdentifier.StartsWith('maccatalyst'))">
+    <DefineConstants>$(DefineConstants);PLATFORM_MAC_CATALYST</DefineConstants>
+    <TargetFramework>net9.0-maccatalyst</TargetFramework>
+  </PropertyGroup> -->
+  <!-- iOS -->
+  <!-- <PropertyGroup Condition="$(RuntimeIdentifier.StartsWith('ios'))">
+    <DefineConstants>$(DefineConstants);PLATFORM_IOS</DefineConstants>
+    <TargetFramework>net9.0-ios</TargetFramework>
+  </PropertyGroup> -->
+  <!-- Windows -->
+  <PropertyGroup Condition="$(RuntimeIdentifier.StartsWith('win'))">
+    <DefineConstants>$(DefineConstants);PLATFORM_WINDOWS</DefineConstants>
+  </PropertyGroup>
+  <!-- Web (WASM) -->
+  <!-- <PropertyGroup Condition="$(RuntimeIdentifier.StartsWith('browser'))">
+    <DefineConstants>$(DefineConstants);PLATFORM_WEB</DefineConstants>
+    <TargetFramework>net9.0-browser</TargetFramework>
+  </PropertyGroup> -->
+
+  <Target Name="LogConstants" AfterTargets="Build">
+    <Message Text="Defined Constants: $(DefineConstants)" Importance="High" />
+  </Target>
+
+  <ItemGroup>
+    <!-- You can find all available packages from the godot-dotnet nuget -->
+    <!-- source with the following command from this directory: -->
+    <!--
+        nuget list -Source godot-dotnet -AllVersions -Prerelease
+    -->
+    <PackageReference Include="Godot.Bindings" Version="4.4.0-nightly.24509.1" />
+    <PackageReference Include="Godot.SourceGenerators" Version="4.4.0-nightly.24509.1" />
+  </ItemGroup>
+</Project>
