@@ -1,5 +1,6 @@
 nupkg/
 /build/
+addons/platform/builds
 
 coverage/*
 !coverage/.gdignore
