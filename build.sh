@@ -4,7 +4,7 @@
 rm -rf ./build
 
 if [ -z "$1" ]; then
-  echo "Error: No platform specified. Please provide 'win', 'macOS', or 'linux'."
+  echo "Error: No platform specified. Please provide 'windows', 'macos', or 'linux'."
   exit 1
 fi
 
@@ -33,7 +33,7 @@ case "$1" in
     ;;
 
   *)
-    echo "Error: Invalid platform specified. Use 'win', 'macOS', or 'linux'."
+    echo "Error: Invalid platform specified. Use 'windows', 'macos', or 'linux'."
     exit 1
     ;;
 esac

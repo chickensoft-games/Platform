@@ -22,7 +22,6 @@ internal sealed partial class Displays : RefCounted {
   }
 
   private static float GetDisplayScaleFactorMacOS(Window window) {
-    GD.Print("MacOS");
     // This will always be 1, 2, or 3, due to limited information from macOS.
     // This scale factor represents the type of retina display, but not the
     // user-adjusted logical resolution scaling. We can determine the actual
@@ -40,19 +39,9 @@ internal sealed partial class Displays : RefCounted {
       Mathf.RoundToInt(logicalResolutionRetina.Y / retinaScale)
     );
 
-    GD.Print("Native resolution: ", nativeResolution);
-    GD.Print("Logical resolution: ", logicalResolution);
-
     var scaleFactor = (float)nativeResolution.Y / logicalResolution.Y;
-    var inverseScaleFactor = logicalResolution.Y / (float)nativeResolution.Y;
 
-    GD.Print("Scale factor: ", scaleFactor);
-    GD.Print("Inverse scale factor: ", inverseScaleFactor);
-
-    var finalScaleFactor = inverseScaleFactor * retinaScale;
-    GD.Print("Final scale factor: ", finalScaleFactor);
-
-    return finalScaleFactor;
+    return scaleFactor;
   }
 
   private static float GetDisplayScaleFactorWindows(Window window) {
