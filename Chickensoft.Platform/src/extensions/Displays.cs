@@ -17,7 +17,7 @@ internal sealed partial class Displays : RefCounted {
 #elif PLATFORM_WINDOWS
     return GetDisplayScaleFactorWindows(window);
 #else
-    return 0f;
+    return DisplayServer.Singleton.ScreenGetScale(window.CurrentScreen);
 #endif
   }
 
