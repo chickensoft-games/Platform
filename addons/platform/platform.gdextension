@@ -6,13 +6,8 @@ reloadable = false ; no way to do this with C# extensions (yet)
 
 [libraries]
 
-macos.debug.arm64 = "res://addons/platform/builds/macos/Platform.debug.osx.arm64.dylib"
-macos.release.arm64 = "res://addons/platform/builds/macos/Platform.osx.arm64.dylib"
-macos.debug.x64 = "res://addons/platform/builds/macos/Platform.debug.osx.x64.dylib"
-macos.release.x64 = "res://addons/platform/builds/macos/Platform.osx.x64.dylib"
-windows.debug.x86_64 = "res://addons/platform/builds/windows/Platform.debug.win.x64.dll"
-windows.release.x86_64 = "res://addons/platform/builds/windows/Platform.win.x64.dll"
-linux.debug.arm64 = "res://addons/platform/builds/linux/Platform.debug.linux.arm64.so"
-linux.release.arm64 = "res://addons/platform/builds/linux/Platform.linux.arm64.so"
-linux.debug.x64 = "res://addons/platform/builds/linux/Platform.debug.linux.x64.so"
-linux.release.x64 = "res://addons/platform/builds/linux/Platform.linux.x64.so"
+macos.arm64 = "res://addons/platform/builds/macos/Platform.osx.arm64.dylib"
+macos.x64 = "res://addons/platform/builds/macos/Platform.osx.x64.dylib"
+windows.x86_64 = "res://addons/platform/builds/windows/Platform.win.x64.dll"
+linux.arm64 = "res://addons/platform/builds/linux/Platform.linux.arm64.so"
+linux.x64 = "res://addons/platform/builds/linux/Platform.linux.x64.so"

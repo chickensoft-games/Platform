@@ -1,6 +1,7 @@
 nupkg/
 /build/
 addons/platform/builds
+codesigning/
 
 coverage/*
 !coverage/.gdignore

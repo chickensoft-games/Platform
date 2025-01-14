@@ -16,6 +16,9 @@ on:
 jobs:
   build-macos:
     runs-on: macos-latest
+    env:
+      MAC_APP_DISTRIBUTION_BASE64: ${{ secrets.MAC_APP_DISTRIBUTION }}
+      KEYCHAIN_PASSWORD: 1234
     steps:
       - name: 🧾 Checkout
         uses: actions/checkout@v4
@@ -24,6 +27,35 @@ jobs:
           lfs: true
           submodules: "recursive"
           fetch-depth: 0 # So we can get all tags.
+
+      - name: 🔑 Setup Codesigning
+        run: |
+          # GitHub has a guide for just this.
+          # https://docs.github.com/en/actions/use-cases-and-examples/deploying/installing-an-apple-certificate-on-macos-runners-for-xcode-development
+
+          # create variables
+          CERTIFICATE_PATH=$RUNNER_TEMP/mac_app_distribution.p12
+          KEYCHAIN_PATH=$RUNNER_TEMP/codesigning.keychain-db
+
+          echo -n "$MAC_APP_DISTRIBUTION_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+
+          # create temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # import certificate to keychain
+          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+
+          # save keychain path for later steps
+          echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> $GITHUB_ENV
+
+          # save certificate for later steps
+          CERT=$(security find-identity -p codesigning -v $KEYCHAIN_PATH | grep -oE '".*"' | tr -d '"')
+          echo "Codesigning certificate: $CERT"
+          echo "CERT=$CERT" >> $GITHUB_ENV
 
       - uses: actions/setup-dotnet@v4
         name: 💽 Setup .NET SDK
@@ -38,6 +70,20 @@ jobs:
         run: |
           chmod +x ./build.sh
           ./build.sh macos
+
+      - name: 🔐 Codesign Dylibs
+        run: |
+          codesign --sign "$CERT" --options runtime \
+            addons/platform/builds/macos/Platform.osx.arm64.dylib
+          codesign --sign "$CERT" --options runtime \
+            addons/platform/builds/macos/Platform.osx.x64.dylib
+
+      - name: 🧐 Verify Codesigning
+        run: |
+          codesign --verify --verbose=4 \
+            addons/platform/builds/macos/Platform.osx.arm64.dylib
+          codesign --verify --verbose=4 \
+            addons/platform/builds/macos/Platform.osx.x64.dylib
 
       - name: ⬆️ Upload macOS artifacts
         uses: actions/upload-artifact@v4
