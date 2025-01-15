@@ -28,7 +28,7 @@ You can download the zip file from the releases. For a better experience, consid
     "platform": {
       "source": "zip",
       "subfolder": "platform",
-      "url": "https://github.com/chickensoft-games/Platform/releases/download/0.1.0/platform.zip"
+      "url": "https://github.com/chickensoft-games/Platform/releases/download/0.4.0/platform.zip"
     }
   }
 }
