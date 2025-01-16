@@ -4,7 +4,7 @@ using Godot;
 using ObjC = Lib.ObjectiveC;
 using CG = Lib.CoreGraphics;
 
-internal sealed partial class Displays : RefCounted {
+internal static partial class Displays {
   /// <summary>
   /// Given a pointer to an NSWindow instance, find the CGDirectDisplayID it is
   /// on. Godot provides a method to get the NSWindow pointer of the
