@@ -2,19 +2,18 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
+    <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsAotCompatible>true</IsAotCompatible>
     <PublishAot>true</PublishAot>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <StripSymbols>false</StripSymbols>
+    <DefineConstants>GDEXTENSION</DefineConstants>
 
     <RootNamespace>Chickensoft.Platform</RootNamespace>
 
-    <!-- <PublishAotUsingRuntimePack>true</PublishAotUsingRuntimePack> -->
-    <!-- <NativeLib>static</NativeLib>
-    <Optimized Condition="'$(Configuration)' == 'Release'">true</Optimized> -->
+    <Optimized Condition="'$(Configuration)' == 'Release'">true</Optimized>
     <ProcessedRuntimeIdentifier>$([System.String]::Copy('$(RuntimeIdentifier)').Replace('-', '.'))</ProcessedRuntimeIdentifier>
     <ProcessedConfiguration Condition="'$(Configuration)' == 'Debug'">.debug</ProcessedConfiguration>
     <ProcessedConfiguration Condition="'$(Configuration)' == 'Release'"></ProcessedConfiguration>

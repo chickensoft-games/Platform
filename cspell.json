@@ -42,6 +42,7 @@
     "endregion",
     "fabrik",
     "framebuffer",
+    "GDEXTENSION",
     "gdscript",
     "globaltool",
     "gltf",

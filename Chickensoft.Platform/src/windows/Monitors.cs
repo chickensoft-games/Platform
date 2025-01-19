@@ -1,5 +1,6 @@
 namespace Chickensoft.Platform.Windows;
 
+using System;
 using Godot;
 
 internal sealed class Monitors {

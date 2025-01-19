@@ -1,5 +1,6 @@
 namespace Chickensoft.Platform.MacOS.Lib;
 
+using System;
 using System.Runtime.InteropServices;
 
 internal static partial class ObjectiveC {

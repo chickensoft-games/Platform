@@ -1,24 +1,33 @@
 namespace Chickensoft.Platform;
 
+using System.Runtime.InteropServices;
 using Godot;
 
+/// <summary>Platform-specific extensions for Godot.</summary>
+#if GDEXTENSION
 [GodotClass]
-internal sealed partial class Displays : RefCounted {
+#endif
+public sealed partial class Displays : RefCounted {
   /// <summary>
   ///
   /// </summary>
   /// <param name="window">Godot window.</param>
   /// <returns>The scale factor of the window.</returns>
+#if GDEXTENSION
   [BindMethod]
+#endif
   public float GetDisplayScaleFactor(Window window) {
     var id = window.GetWindowId();
-#if PLATFORM_MACOS
-    return GetDisplayScaleFactorMacOS(window);
-#elif PLATFORM_WINDOWS
-    return GetDisplayScaleFactorWindows(window);
-#else
+
+    if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
+      return GetDisplayScaleFactorMacOS(window);
+    }
+
+    else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+      return GetDisplayScaleFactorWindows(window);
+    }
+
     return DisplayServer.Singleton.ScreenGetScale(window.CurrentScreen);
-#endif
   }
 
   private static float GetDisplayScaleFactorMacOS(Window window) {
