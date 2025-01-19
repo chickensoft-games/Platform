@@ -9,7 +9,17 @@ using Godot;
 #endif
 public sealed partial class Displays : RefCounted {
   /// <summary>
-  ///
+  /// Shared instance of the Displays class.
+  /// </summary>
+  public static Displays Singleton { get; } = new Displays();
+
+  /// <summary>
+  /// Computes the scale factor for the current desktop platform. On Windows,
+  /// this invokes Win32 API calls to compute the actual scale factor of the
+  /// screen that the window is on. On macOS, this computes the scale factor
+  /// by using CoreGraphics to find the native pixel resolution of the screen
+  /// and using it to form a ratio with the logical resolution of the screen
+  /// (indicating the true scale factor for the system).
   /// </summary>
   /// <param name="window">Godot window.</param>
   /// <returns>The scale factor of the window.</returns>
@@ -42,7 +52,8 @@ public sealed partial class Displays : RefCounted {
     var cgDisplayId = MacOS.Displays.GetCGDirectDisplayID(window.GetWindowId());
     var nativeResolution = MacOS.Displays.GetScreenResolution(cgDisplayId);
 
-    var logicalResolutionRetina = DisplayServer.Singleton.ScreenGetSize();
+    var logicalResolutionRetina =
+      DisplayServer.Singleton.ScreenGetSize(window.CurrentScreen);
     var logicalResolution = new Vector2I(
       Mathf.RoundToInt(logicalResolutionRetina.X / retinaScale),
       Mathf.RoundToInt(logicalResolutionRetina.Y / retinaScale)
