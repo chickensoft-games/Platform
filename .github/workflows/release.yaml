@@ -323,6 +323,12 @@ jobs:
           gh release create --title "v$version" --generate-notes "$version" \
             ./platform.zip "$NUGET_PKG"
 
+      - uses: actions/setup-dotnet@v4
+        name: 💽 Setup .NET SDK
+        with:
+          # Use the .NET SDK from global.json in the root of the repository.
+          global-json-file: global.json
+
       - name: 🛜 Publish Nuget Package
         run: |
           dotnet nuget push "${{ steps.package-path.outputs.package }}" \
