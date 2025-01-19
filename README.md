@@ -48,7 +48,7 @@ func _ready() -> void:
 ## 📦 Nuget Package Installation
 
 ```sh
-dotnet add package Chickensoft.Platform --include-prerelease
+dotnet add package Chickensoft.Platform --prerelease
 ```
 
 Then, use it like so:
