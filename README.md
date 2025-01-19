@@ -1,6 +1,6 @@
 # 🧩 Platform
 
-Platform-specific native extensions for Godot, written in C# and compiled ahead ahead-of-time (AOT).
+Platform-specific native extensions for Godot. This is distributed as a GDExtension that GDScript users can use, as well as a [nuget package] that C# scripting users can add to their projects.
 
 ---
 
@@ -17,7 +17,7 @@ Right now, this project simply provides a way to determine the actual scale fact
 - ✅ Determine scale factor on macOS.
 - ✅ Determine scale factor on Windows.
 
-## 📦 Installation
+## 📦 GDExtension Installation
 
 You can download the zip file from the releases. For a better experience, consider using [GodotEnv] to install and manage it as an addon in your project. In your addons.json file, place the following:
 
@@ -45,11 +45,22 @@ func _ready() -> void:
   print("scale factor: ", scaleFactor)
 ```
 
-## 🤔 Why?
+## 📦 Nuget Package Installation
 
-The reason this project exists is because ordinary managed C# assemblies loaded by Godot don't have access to the Godot parent process' memory. We need to be able to take the native window pointer provided by Godot and use it with the OS API's — something that can only be done from a native library loaded by Godot. Accessing pointers from Godot does not work when hosted as a managed assembly.
+```sh
+dotnet add package Chickensoft.Platform --include-prerelease
+```
 
-## 🛠️ Building
+Then, use it like so:
+
+```csharp
+using Chickensoft.Platform;
+var systemScale = Displays.Singleton.GetDisplayScaleFactor(window);
+```
+
+That's it!
+
+## 🛠️ Building the GDExtension
 
 .NET AOT compilation does not support cross-OS builds yet. You'll only be able to build a few variants on a single OS.
 
@@ -61,9 +72,18 @@ You can use the included `build.sh` script to create the assemblies for your pla
 ./build.sh windows
 ```
 
+## 🛠️ Building the Nuget Package
+
+The nuget package project shares the same source code and can be built directly.
+
+```sh
+cd Chickensoft.Platform
+dotnet build
+```
+
 ## 🤗 Contributing
 
-This uses the [godot-dotnet] C# GDExtension bindings that are still being actively developed. Since godot-dotnet isn't published yet, we've added a `nuget.config` file to the project which contains the nightly package feed.
+The GDExtension version of this uses the [godot-dotnet] C# GDExtension bindings that are still being actively developed. Since godot-dotnet isn't published yet, we've added a `nuget.config` file to the project which contains the nightly package feed.
 
 Note that you can enumerate all versions of godot-dotnet available for use by running:
 
@@ -96,3 +116,4 @@ If you know the answer to any of these, please open an issue or reach out to us 
 [godot-dotnet]: https://github.com/raulsntos/godot-dotnet
 [native-android-libs]: https://github.com/jonathanpeppers/Android-NativeAOT/blob/main/DotNet/libdotnet.csproj
 [GodotEnv]: https://github.com/chickensoft-games/GodotEnv
+[nuget package]: https://www.nuget.org/packages/Chickensoft.Platform/
