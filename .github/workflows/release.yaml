@@ -203,8 +203,8 @@ jobs:
           include: Chickensoft.Platform/Chickensoft.Platform.csproj
 
       - name: 📦 Build
-        run: dotnet build \
-          Chickensoft.Platform/Chickensoft.Platform.csproj -c Release
+        working-directory: Chickensoft.Platform
+        run: dotnet build -c Release
 
       - name: 🔎 Get Package Path
         id: package-path
