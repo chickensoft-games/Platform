@@ -37,4 +37,24 @@ internal sealed class Monitors {
     // https://stackoverflow.com/a/69573593
     return dpiY / 96f;
   }
+
+  /// <summary>
+  /// Determines the native pixel resolution of the monitor.
+  /// </summary>
+  /// <param name="hMonitor">Win32 monitor handle.</param>
+  /// <returns>Native pixel resolution.</returns>
+  public static unsafe Vector2I GetMonitorResolution(uint hMonitor) {
+    var monitorInfo = new User32.MonitorInfo {
+      cbSize = sizeof(User32.MonitorInfo)
+    };
+
+    if (!User32.GetMonitorInfoA(new IntPtr(hMonitor), out monitorInfo)) {
+      return new Vector2I(0, 0);
+    }
+
+    return new Vector2I(
+      monitorInfo.rcMonitor.Width,
+      monitorInfo.rcMonitor.Height
+    );
+  }
 }

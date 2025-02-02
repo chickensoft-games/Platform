@@ -10,14 +10,14 @@ config_version=5
 
 [application]
 
-config/name="Chickensoft.Platform.Sandbox"
-run/main_scene="res://src/game/Game.tscn"
-config/features=PackedStringArray("4.4")
+config/name="Chickensoft.Platform.SandboxRef"
+run/main_scene="res://src/Main.tscn"
+config/features=PackedStringArray("4.4", "C#", "Mobile")
 config/icon="res://icon.png"
 
 [dotnet]
 
-project/assembly_name="Chickensoft.Platform.Sandbox"
+project/assembly_name="Chickensoft.Platform.SandboxRef"
 
 [rendering]
 

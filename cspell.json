@@ -64,6 +64,7 @@
     "lightmapper",
     "lihop",
     "linecoverage",
+    "lpmi",
     "maccatalyst",
     "Mathf",
     "methodcoverage",
