@@ -5,6 +5,6 @@ func _ready() -> void:
 	var displays = Displays.new()
 	var window := get_window()
 	var scaleFactor = displays.GetDisplayScaleFactor(window)
-	var resolution = displays.GetNativeResolution(window)
 	print("scale factor: ", scaleFactor)
+	var resolution = displays.GetNativeResolution(window)
 	print("native resolution: ", resolution)
