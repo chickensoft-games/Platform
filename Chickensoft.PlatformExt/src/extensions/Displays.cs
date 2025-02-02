@@ -81,6 +81,9 @@ public sealed partial class Displays : RefCounted {
 
     var logicalResolutionRetina =
       DisplayServer.Singleton.ScreenGetSize(window.CurrentScreen);
+
+    // Note that we divide by Godot's reported retina scale factor, since
+    // the Godot DisplayServer has scaled the logical resolution by it.
     var logicalResolution = new Vector2I(
       Mathf.RoundToInt(logicalResolutionRetina.X / retinaScale),
       Mathf.RoundToInt(logicalResolutionRetina.Y / retinaScale)
