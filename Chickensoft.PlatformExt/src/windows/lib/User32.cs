@@ -48,4 +48,18 @@ internal static partial class User32 {
   )]
   [return: MarshalAs(UnmanagedType.I1)]
   public static partial bool GetMonitorInfo(IntPtr hMonitor, IntPtr lpmi);
+
+  public static readonly IntPtr DPI_AWARENESS_CONTEXT_UNAWARE = new(-1);
+  public static readonly IntPtr DPI_AWARENESS_CONTEXT_SYSTEM_AWARE = new(-2);
+  public static readonly IntPtr DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE =
+    new(-3);
+  public static readonly IntPtr DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 =
+    new(-4);
+  public static readonly IntPtr DPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED =
+    new(-5);
+
+  [LibraryImport(USER32, SetLastError = true)]
+  internal static partial IntPtr SetThreadDpiAwarenessContext(
+    IntPtr dpiContext
+  );
 }

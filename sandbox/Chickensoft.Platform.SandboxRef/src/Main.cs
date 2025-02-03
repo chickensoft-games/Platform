@@ -19,6 +19,7 @@ public partial class Main : Node2D {
     var resolution = displays.GetNativeResolution(window);
     var scaleFactor = displays.GetDisplayScaleFactor(window);
     var godotDpi = DisplayServer.ScreenGetDpi(window.CurrentScreen);
+    var godotScaleFactor = godotDpi / 96.0f;
     var godotRes = DisplayServer.ScreenGetSize(window.CurrentScreen);
     var windowSize = window.Size;
 
@@ -30,17 +31,10 @@ public partial class Main : Node2D {
     GD.Print($"Godot  Resolution: {godotRes.X}, {godotRes.Y}");
     GD.Print($"            Scale: {scaleFactor}");
     GD.Print($"        Godot DPI: {godotDpi}");
+    GD.Print($"      Godot Scale: {godotScaleFactor}");
     GD.Print($"           Window: {windowSize.X}, {windowSize.Y}");
     GD.Print(
       $"   Project Window: {projectWindowSize.X}, {projectWindowSize.Y}"
-    );
-
-    // All of Godot's coordinates are in virtual window coordinates, and since
-    // we are not per-monitor DPI aware, this is the scale factor of
-    // the primary screen.
-    window.Size = new Vector2I(
-      (int)(windowSize.X * scaleFactor),
-      (int)(windowSize.Y * scaleFactor)
     );
   }
 }

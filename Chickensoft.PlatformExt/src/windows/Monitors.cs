@@ -30,12 +30,21 @@ internal sealed class Monitors {
   /// <param name="hMonitor">Win32 monitor handle.</param>
   /// <returns>Monitor scale factor.</returns>
   public static float GetMonitorScale(long hMonitor) {
+    // We need to get the DPI of the monitor itself, not the system DPI.
+    // Windows 10+ only.
+    var oldDpiAwareness = User32.SetThreadDpiAwarenessContext(
+      User32.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
+    );
+
     Shcore.GetDpiForMonitor(
       new IntPtr(hMonitor),
       Shcore.MONITOR_DPI_TYPE.MDT_EFFECTIVE_DPI,
       out var dpiX,
       out var dpiY
     );
+
+    // Restore previous thread dpi awareness context, just to be safe.
+    User32.SetThreadDpiAwarenessContext(oldDpiAwareness);
 
     // https://stackoverflow.com/a/69573593
     return dpiY / 96f;
