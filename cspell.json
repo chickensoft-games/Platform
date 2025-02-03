@@ -45,6 +45,7 @@
     "fabrik",
     "framebuffer",
     "GDEXTENSION",
+    "GDISCALED",
     "gdscript",
     "globaltool",
     "gltf",
