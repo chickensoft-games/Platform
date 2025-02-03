@@ -57,7 +57,6 @@ public sealed partial class Displays : RefCounted {
         MacOS.Displays.GetCGDirectDisplayID(id)
       );
     }
-
     else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
       return Windows.Monitors.GetMonitorResolution(
         Windows.Monitors.GetMonitorHandle(id)
@@ -96,6 +95,18 @@ public sealed partial class Displays : RefCounted {
 
   private static float GetDisplayScaleFactorWindows(Window window) {
     var hMonitor = Windows.Monitors.GetMonitorHandle(window.GetWindowId());
+
+    var nativeResolution = Windows.Monitors.GetMonitorResolution(hMonitor);
+    var logicalResolution =
+      DisplayServer.Singleton.ScreenGetSize(window.CurrentScreen);
+
+    var maxScale = DisplayServer.Singleton.ScreenGetMaxScale();
+
+    logicalResolution = new Vector2I(
+      Mathf.RoundToInt(logicalResolution.X / maxScale),
+      Mathf.RoundToInt(logicalResolution.Y / maxScale)
+    );
+
     return Windows.Monitors.GetMonitorScale(hMonitor);
   }
 }

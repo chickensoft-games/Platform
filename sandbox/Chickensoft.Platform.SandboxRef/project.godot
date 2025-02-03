@@ -15,6 +15,12 @@ run/main_scene="res://src/Main.tscn"
 config/features=PackedStringArray("4.4", "C#", "Mobile")
 config/icon="res://icon.png"
 
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/size/initial_position_type=3
+
 [dotnet]
 
 project/assembly_name="Chickensoft.Platform.SandboxRef"

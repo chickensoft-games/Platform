@@ -1,0 +1,15 @@
+{
+  "configurations": [
+    {
+      "name": "🕹 Debug Game",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${env:GODOT}",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    },
+  ]
+}

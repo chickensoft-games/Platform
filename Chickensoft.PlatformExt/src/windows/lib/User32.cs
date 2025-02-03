@@ -4,19 +4,25 @@ using System;
 using System.Runtime.InteropServices;
 
 internal static partial class User32 {
+  public const string USER32 = "user32.dll";
   public const int MONITOR_DEFAULTTONULL = 0x00000000;
   public const int MONITOR_DEFAULTTOPRIMARY = 0x00000001;
   public const int MONITOR_DEFAULTTONEAREST = 0x00000002;
 
 #pragma warning disable IDE1006 // Naming Styles
-  [StructLayout(LayoutKind.Sequential)]
-  public struct MonitorInfo {
-
+  [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+  public sealed class MonitorInfoEx {
     public int cbSize;
-
     public Rect rcMonitor;
     public Rect rcWork;
-    public uint dwFlags;
+    public int dwFlags;
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+    public char[] szDevice;
+
+    public MonitorInfoEx() {
+      cbSize = Marshal.SizeOf<MonitorInfoEx>();
+      szDevice = new char[32];
+    }
   }
 #pragma warning restore IDE1006 // Naming Styles
 
@@ -31,13 +37,15 @@ internal static partial class User32 {
     public readonly int Height => Bottom - Top;
   }
 
-  [LibraryImport("user32.dll", SetLastError = true)]
+  [LibraryImport(USER32, SetLastError = true)]
   public static partial IntPtr MonitorFromWindow(IntPtr hwnd, uint dwFlags);
 
-  [LibraryImport("user32.dll", SetLastError = true)]
+  [LibraryImport(
+    USER32,
+    StringMarshalling = StringMarshalling.Utf16,
+    SetLastError = true,
+    EntryPoint = "GetMonitorInfoW"
+  )]
   [return: MarshalAs(UnmanagedType.I1)]
-  public static partial bool GetMonitorInfoA(
-     IntPtr hMonitor,
-    out MonitorInfo lpmi
-  );
+  public static partial bool GetMonitorInfo(IntPtr hMonitor, IntPtr lpmi);
 }
