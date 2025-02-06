@@ -21,13 +21,20 @@ public partial class Main : Control {
       ProjectSettings.GetSetting("display/window/size/viewport_width").AsInt32(),
       ProjectSettings.GetSetting("display/window/size/viewport_height").AsInt32()
     );
+    // Use Win32 or CoreGraphics to get the display's actual resolution.
     var resolution = displays.GetNativeResolution(window);
+    // Use Win32 or CoreGraphics to determine the display's actual scale factor.
     var monitorScale = displays.GetDisplayScaleFactor(window);
+    // Godot reports Windows' system scale factor, which may be different from
+    // the monitor's scale factor since Godot does not opt-in to per-monitor DPI
+    // awareness on Windows.
     var systemDpi = DisplayServer.ScreenGetDpi(window.CurrentScreen);
+    // Windows scale factor can be determined by dividing by 96.
     var systemScale = systemDpi / 96.0f;
+    // Get the size of the window from Godot, which is going to be in Godot's
+    // system scale factor coordinate space.
     var godotRes = DisplayServer.ScreenGetSize(window.CurrentScreen);
     var windowSize = window.Size;
-    var contentScaleFactor = monitorScale / THEME_SCALE;
     // To convert from Godot to monitor scale
     var correctionFactor = monitorScale / systemScale;
 
@@ -41,8 +48,19 @@ public partial class Main : Control {
     // monitor's actual resolution. Users can offer scaling options in their
     // game and multiply this factor by the scaling option to get the final
     // scale, but this at least gives them a common frame of reference.
-    var contentScaleFactorIndependent =
-      themeScale / monitorScale / systemScale;
+    var contentScaleFactor = themeScale / correctionFactor;
+
+    var newWindowSize = new Vector2I(
+      (int)(windowSize.X / correctionFactor),
+      (int)(windowSize.Y / correctionFactor)
+    );
+
+
+    var contentScaleSize = window.ContentScaleSize;
+    var newContentScaleSize = new Vector2I(
+      (int)(contentScaleSize.X * monitorScale * correctionFactor),
+      (int)(contentScaleSize.Y * monitorScale * correctionFactor)
+    );
 
     // The native resolution (true resolution of the monitor) and Godot's
     // understanding of the monitor resolution on Windows can be different,
@@ -53,16 +71,21 @@ public partial class Main : Control {
     GD.Print($"   Godot  Resolution: {godotRes.X}, {godotRes.Y}");
     GD.Print($"  True Monitor Scale: {monitorScale}");
     GD.Print($"        System Scale: {systemScale}");
-    GD.Print($"              Window: {windowSize.X}, {windowSize.Y}");
     GD.Print($"Content Scale Factor: {contentScaleFactor}");
-    GD.Print(
-      $"Content Scale Factor 2: {contentScaleFactorIndependent}"
-    );
     GD.Print($"   Correction Factor: {correctionFactor}");
+    GD.Print($"         Window Size: {windowSize.X}, {windowSize.Y}");
     GD.Print(
       $"      Project Window: {projectWindowSize.X}, {projectWindowSize.Y}"
     );
+    GD.Print($"     New Window Size: {newWindowSize.X}, {newWindowSize.Y}");
+    GD.Print($"  Content Scale Size: {contentScaleSize.X}, {contentScaleSize.Y}");
+    GD.Print(
+      $"New Content Scale Size: {newContentScaleSize.X}, {newContentScaleSize.Y}"
+    );
 
-    window.ContentScaleFactor = contentScaleFactorIndependent;
+    window.ContentScaleFactor = contentScaleFactor;
+    window.ContentScaleSize = newContentScaleSize;
+    window.Size = newWindowSize;
+    QueueRedraw();
   }
 }
