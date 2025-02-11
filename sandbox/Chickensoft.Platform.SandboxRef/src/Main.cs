@@ -55,13 +55,6 @@ public partial class Main : Control {
       (int)(windowSize.Y / correctionFactor)
     );
 
-
-    var contentScaleSize = window.ContentScaleSize;
-    var newContentScaleSize = new Vector2I(
-      (int)(contentScaleSize.X * monitorScale * correctionFactor),
-      (int)(contentScaleSize.Y * monitorScale * correctionFactor)
-    );
-
     // The native resolution (true resolution of the monitor) and Godot's
     // understanding of the monitor resolution on Windows can be different,
     // since Godot does not have per-monitor DPI awareness on Windows (yet).
@@ -78,13 +71,8 @@ public partial class Main : Control {
       $"      Project Window: {projectWindowSize.X}, {projectWindowSize.Y}"
     );
     GD.Print($"     New Window Size: {newWindowSize.X}, {newWindowSize.Y}");
-    GD.Print($"  Content Scale Size: {contentScaleSize.X}, {contentScaleSize.Y}");
-    GD.Print(
-      $"New Content Scale Size: {newContentScaleSize.X}, {newContentScaleSize.Y}"
-    );
 
     window.ContentScaleFactor = contentScaleFactor;
-    window.ContentScaleSize = newContentScaleSize;
     window.Size = newWindowSize;
     QueueRedraw();
   }

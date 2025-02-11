@@ -33,8 +33,12 @@ internal static partial class Shcore {
   }
 
   [LibraryImport(SHCORE, SetLastError = true)]
-  internal static partial int GetScaleFactorForMonitor(IntPtr hMonitor, out DEVICE_SCALE_FACTOR pScale);
+  internal static partial int GetScaleFactorForMonitor(
+    IntPtr hMonitor, out DEVICE_SCALE_FACTOR pScale
+  );
 
   [LibraryImport(SHCORE, SetLastError = true)]
-  internal static partial int GetDpiForMonitor(IntPtr hMonitor, MONITOR_DPI_TYPE dpiType, out uint dpiX, out uint dpiY);
+  internal static partial int GetDpiForMonitor(
+    IntPtr hMonitor, MONITOR_DPI_TYPE dpiType, out uint dpiX, out uint dpiY
+  );
 }

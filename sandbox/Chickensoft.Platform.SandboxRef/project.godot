@@ -17,9 +17,11 @@ config/icon="res://icon.png"
 
 [display]
 
-window/size/viewport_width=1280
+window/size/viewport_width=720
 window/size/viewport_height=720
 window/size/initial_position_type=3
+window/size/window_width_override=1280
+window/size/window_height_override=720
 
 [dotnet]
 
@@ -27,7 +29,9 @@ project/assembly_name="Chickensoft.Platform.SandboxRef"
 
 [gui]
 
-theme/default_theme_scale=4.0
+theme/default_theme_scale=2.0
+theme/default_font_multichannel_signed_distance_field=true
+theme/default_font_generate_mipmaps=true
 
 [rendering]
 
