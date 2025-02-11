@@ -36,7 +36,9 @@ public partial class Main : Control {
     var godotRes = DisplayServer.ScreenGetSize(window.CurrentScreen);
     var windowSize = window.Size;
     // To convert from Godot to monitor scale
-    var correctionFactor = monitorScale / systemScale;
+    var correctionFactor = OS.HasFeature("macos")
+      ? (float)resolution.Y / godotRes.Y // macos
+      : monitorScale / systemScale; // windows
 
     var themeScale = (float)resolution.Y / ThemeDesignSize.Y;
 
