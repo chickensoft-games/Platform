@@ -1,9 +1,9 @@
 namespace Chickensoft.Platform.MacOS;
 
-using Godot;
-using ObjC = Lib.ObjectiveC;
-using CG = Lib.CoreGraphics;
 using System;
+using Godot;
+using CG = Lib.CoreGraphics;
+using ObjC = Lib.ObjectiveC;
 
 internal static partial class Displays {
   /// <summary>

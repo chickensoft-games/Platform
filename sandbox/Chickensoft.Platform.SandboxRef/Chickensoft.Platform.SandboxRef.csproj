@@ -1,0 +1,32 @@
+<Project Sdk="Godot.NET.Sdk/4.4.0-dev.7">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Chickensoft.Platform.SandboxRef</RootNamespace>
+    <!-- Required for some nuget packages to work -->
+    <!-- godotengine/godot/issues/42271#issuecomment-751423827 -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <!-- To show generated files -->
+    <!-- <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles> -->
+    <!--
+      <CompilerGeneratedFilesOutputPath>.generated</CompilerGeneratedFilesOutputPath>
+    -->
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <Title>Chickensoft.Platform.SandboxRef</Title>
+    <Version>1.0.0</Version>
+    <Description>Chickensoft.Platform.SandboxRef</Description>
+    <Copyright>© 2024 Chickensoft Organization</Copyright>
+    <Authors>Chickensoft Organization</Authors>
+    <Company>Chickensoft Organization</Company>
+    <!-- Don't include unit tests in release builds. -->
+    <DefaultItemExcludes Condition="'$(Configuration)' == 'ExportRelease'">
+      $(DefaultItemExcludes);test/**/*
+    </DefaultItemExcludes>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../Chickensoft.Platform/Chickensoft.Platform.csproj" />
+  </ItemGroup>
+</Project>

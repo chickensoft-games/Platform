@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Chickensoft.Platform.Sandbox"
-run/main_scene="uid://cywpu6lxdjhuu"
+run/main_scene="res://src/game/Game.tscn"
 config/features=PackedStringArray("4.4")
 config/icon="res://icon.png"
 

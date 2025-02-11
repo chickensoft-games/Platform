@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 
 
 internal static partial class Shcore {
+  public const string SHCORE = "shcore.dll";
   public enum DEVICE_SCALE_FACTOR {
     DEVICE_SCALE_FACTOR_INVALID = 0,
     SCALE_100_PERCENT = 100,
@@ -31,9 +32,13 @@ internal static partial class Shcore {
     MDT_RAW_DPI = 2
   }
 
-  [LibraryImport("shcore.dll", SetLastError = true)]
-  internal static partial int GetScaleFactorForMonitor(IntPtr hMonitor, out DEVICE_SCALE_FACTOR pScale);
+  [LibraryImport(SHCORE, SetLastError = true)]
+  internal static partial int GetScaleFactorForMonitor(
+    IntPtr hMonitor, out DEVICE_SCALE_FACTOR pScale
+  );
 
-  [LibraryImport("shcore.dll", SetLastError = true)]
-  internal static partial int GetDpiForMonitor(IntPtr hMonitor, MONITOR_DPI_TYPE dpiType, out uint dpiX, out uint dpiY);
+  [LibraryImport(SHCORE, SetLastError = true)]
+  internal static partial int GetDpiForMonitor(
+    IntPtr hMonitor, MONITOR_DPI_TYPE dpiType, out uint dpiX, out uint dpiY
+  );
 }

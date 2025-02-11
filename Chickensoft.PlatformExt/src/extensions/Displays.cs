@@ -40,6 +40,32 @@ public sealed partial class Displays : RefCounted {
     return DisplayServer.Singleton.ScreenGetScale(window.CurrentScreen);
   }
 
+  /// <summary>
+  /// Finds the native resolution of the screen that the given window is on using
+  /// platform-specific API's on macOS and Windows.
+  /// </summary>
+  /// <param name="window">Godot window.</param>
+  /// <returns>Native resolution on macOS or Windows.</returns>
+#if GDEXTENSION
+  [BindMethod]
+#endif
+  public Vector2I GetNativeResolution(Window window) {
+    var id = window.GetWindowId();
+
+    if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
+      return MacOS.Displays.GetScreenResolution(
+        MacOS.Displays.GetCGDirectDisplayID(id)
+      );
+    }
+    else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+      return Windows.Monitors.GetMonitorResolution(
+        Windows.Monitors.GetMonitorHandle(id)
+      );
+    }
+
+    return DisplayServer.Singleton.ScreenGetSize(window.CurrentScreen);
+  }
+
   private static float GetDisplayScaleFactorMacOS(Window window) {
     // This will always be 1, 2, or 3, due to limited information from macOS.
     // This scale factor represents the type of retina display, but not the
@@ -54,6 +80,9 @@ public sealed partial class Displays : RefCounted {
 
     var logicalResolutionRetina =
       DisplayServer.Singleton.ScreenGetSize(window.CurrentScreen);
+
+    // Note that we divide by Godot's reported retina scale factor, since
+    // the Godot DisplayServer has scaled the logical resolution by it.
     var logicalResolution = new Vector2I(
       Mathf.RoundToInt(logicalResolutionRetina.X / retinaScale),
       Mathf.RoundToInt(logicalResolutionRetina.Y / retinaScale)
@@ -66,6 +95,7 @@ public sealed partial class Displays : RefCounted {
 
   private static float GetDisplayScaleFactorWindows(Window window) {
     var hMonitor = Windows.Monitors.GetMonitorHandle(window.GetWindowId());
+
     return Windows.Monitors.GetMonitorScale(hMonitor);
   }
 }
