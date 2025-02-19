@@ -52,7 +52,7 @@ internal sealed class Monitors {
 
   public static Vector2I GetMonitorResolution(long hMonitor) {
     var hMonitorPtr = new IntPtr(hMonitor);
-    var monSize = Marshal.SizeOf(typeof(User32.MonitorInfoEx));
+    var monSize = Marshal.SizeOf<User32.MonitorInfoEx>();
     var pMonitorInfo = Marshal.AllocHGlobal(monSize);
 
     // We have to set the structure size first.
