@@ -22,9 +22,9 @@ public partial class Main : Control {
       ProjectSettings.GetSetting("display/window/size/viewport_height").AsInt32()
     );
     // Use Win32 or CoreGraphics to get the display's actual resolution.
-    var resolution = displays.GetNativeResolution(window);
+    var resolution = Displays.Singleton.GetNativeResolution(window);
     // Use Win32 or CoreGraphics to determine the display's actual scale factor.
-    var monitorScale = displays.GetDisplayScaleFactor(window);
+    var monitorScale = Displays.Singleton.GetDisplayScaleFactor(window);
     // Godot reports Windows' system scale factor, which may be different from
     // the monitor's scale factor since Godot does not opt-in to per-monitor DPI
     // awareness on Windows.
