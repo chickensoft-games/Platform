@@ -14,145 +14,145 @@ on:
           - patch
 
 jobs:
-  build-macos:
-    runs-on: macos-latest
-    env:
-      MAC_APP_DISTRIBUTION_BASE64: ${{ secrets.MAC_APP_DISTRIBUTION }}
-      KEYCHAIN_PASSWORD: 1234
-    steps:
-      - name: 🧾 Checkout
-        uses: actions/checkout@v4
-        with:
-          lfs: true
-          submodules: "recursive"
-          fetch-depth: 0 # So we can get all tags.
+  # build-macos:
+  #   runs-on: macos-latest
+  #   env:
+  #     MAC_APP_DISTRIBUTION_BASE64: ${{ secrets.MAC_APP_DISTRIBUTION }}
+  #     KEYCHAIN_PASSWORD: 1234
+  #   steps:
+  #     - name: 🧾 Checkout
+  #       uses: actions/checkout@v4
+  #       with:
+  #         lfs: true
+  #         submodules: "recursive"
+  #         fetch-depth: 0 # So we can get all tags.
 
-      - name: 🔑 Setup Codesigning
-        run: |
-          # GitHub has a guide for just this.
-          # https://docs.github.com/en/actions/use-cases-and-examples/deploying/installing-an-apple-certificate-on-macos-runners-for-xcode-development
+  #     - name: 🔑 Setup Codesigning
+  #       run: |
+  #         # GitHub has a guide for just this.
+  #         # https://docs.github.com/en/actions/use-cases-and-examples/deploying/installing-an-apple-certificate-on-macos-runners-for-xcode-development
 
-          # create variables
-          CERTIFICATE_PATH=$RUNNER_TEMP/mac_app_distribution.p12
-          KEYCHAIN_PATH=$RUNNER_TEMP/codesigning.keychain-db
+  #         # create variables
+  #         CERTIFICATE_PATH=$RUNNER_TEMP/mac_app_distribution.p12
+  #         KEYCHAIN_PATH=$RUNNER_TEMP/codesigning.keychain-db
 
-          echo -n "$MAC_APP_DISTRIBUTION_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+  #         echo -n "$MAC_APP_DISTRIBUTION_BASE64" | base64 --decode -o $CERTIFICATE_PATH
 
-          # create temporary keychain
-          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+  #         # create temporary keychain
+  #         security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+  #         security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+  #         security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
 
-          # import certificate to keychain
-          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
-          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-          security list-keychain -d user -s $KEYCHAIN_PATH
+  #         # import certificate to keychain
+  #         security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+  #         security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+  #         security list-keychain -d user -s $KEYCHAIN_PATH
 
-          # save keychain path for later steps
-          echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> $GITHUB_ENV
+  #         # save keychain path for later steps
+  #         echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> $GITHUB_ENV
 
-          # save certificate for later steps
-          CERT=$(security find-identity -p codesigning -v $KEYCHAIN_PATH | grep -oE '".*"' | tr -d '"')
-          echo "Codesigning certificate: $CERT"
-          echo "CERT=$CERT" >> $GITHUB_ENV
+  #         # save certificate for later steps
+  #         CERT=$(security find-identity -p codesigning -v $KEYCHAIN_PATH | grep -oE '".*"' | tr -d '"')
+  #         echo "Codesigning certificate: $CERT"
+  #         echo "CERT=$CERT" >> $GITHUB_ENV
 
-      - uses: actions/setup-dotnet@v4
-        name: 💽 Setup .NET SDK
-        with:
-          # Use the .NET SDK from global.json in the root of the repository.
-          global-json-file: global.json
+  #     - uses: actions/setup-dotnet@v4
+  #       name: 💽 Setup .NET SDK
+  #       with:
+  #         # Use the .NET SDK from global.json in the root of the repository.
+  #         global-json-file: global.json
 
-      - name: 🌍 Install dependencies
-        run: dotnet restore
+  #     - name: 🌍 Install dependencies
+  #       run: dotnet restore
 
-      - name: 📦 Build for macOS
-        run: |
-          chmod +x ./build.sh
-          ./build.sh macos
+  #     - name: 📦 Build for macOS
+  #       run: |
+  #         chmod +x ./build.sh
+  #         ./build.sh macos
 
-      - name: 🔐 Codesign Dylibs
-        run: |
-          codesign --sign "$CERT" --options runtime \
-            addons/platform/builds/macos/Platform.osx.arm64.dylib
-          codesign --sign "$CERT" --options runtime \
-            addons/platform/builds/macos/Platform.osx.x64.dylib
+  #     - name: 🔐 Codesign Dylibs
+  #       run: |
+  #         codesign --sign "$CERT" --options runtime \
+  #           addons/platform/builds/macos/Platform.osx.arm64.dylib
+  #         codesign --sign "$CERT" --options runtime \
+  #           addons/platform/builds/macos/Platform.osx.x64.dylib
 
-      - name: 🧐 Verify Codesigning
-        run: |
-          codesign --verify --verbose=4 \
-            addons/platform/builds/macos/Platform.osx.arm64.dylib
-          codesign --verify --verbose=4 \
-            addons/platform/builds/macos/Platform.osx.x64.dylib
+  #     - name: 🧐 Verify Codesigning
+  #       run: |
+  #         codesign --verify --verbose=4 \
+  #           addons/platform/builds/macos/Platform.osx.arm64.dylib
+  #         codesign --verify --verbose=4 \
+  #           addons/platform/builds/macos/Platform.osx.x64.dylib
 
-      - name: ⬆️ Upload macOS artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: macos-artifacts
-          path: ./addons/platform/builds/macos
+  #     - name: ⬆️ Upload macOS artifacts
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: macos-artifacts
+  #         path: ./addons/platform/builds/macos
 
-  build-windows:
-    runs-on: windows-latest
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - name: 🧾 Checkout
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GH_BASIC }}
-          lfs: true
-          submodules: "recursive"
-          fetch-depth: 0 # So we can get all tags.
+  # build-windows:
+  #   runs-on: windows-latest
+  #   defaults:
+  #     run:
+  #       shell: bash
+  #   steps:
+  #     - name: 🧾 Checkout
+  #       uses: actions/checkout@v4
+  #       with:
+  #         token: ${{ secrets.GH_BASIC }}
+  #         lfs: true
+  #         submodules: "recursive"
+  #         fetch-depth: 0 # So we can get all tags.
 
-      - uses: actions/setup-dotnet@v4
-        name: 💽 Setup .NET SDK
-        with:
-          # Use the .NET SDK from global.json in the root of the repository.
-          global-json-file: global.json
+  #     - uses: actions/setup-dotnet@v4
+  #       name: 💽 Setup .NET SDK
+  #       with:
+  #         # Use the .NET SDK from global.json in the root of the repository.
+  #         global-json-file: global.json
 
-      - name: 🌍 Install dependencies
-        run: dotnet restore
+  #     - name: 🌍 Install dependencies
+  #       run: dotnet restore
 
-      - name: 📦 Build for Windows
-        run: |
-          chmod +x ./build.sh
-          ./build.sh windows
+  #     - name: 📦 Build for Windows
+  #       run: |
+  #         chmod +x ./build.sh
+  #         ./build.sh windows
 
-      - name: ⬆️ Upload Windows artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows-artifacts
-          path: ./addons/platform/builds/windows
+  #     - name: ⬆️ Upload Windows artifacts
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: windows-artifacts
+  #         path: ./addons/platform/builds/windows
 
-  build-linux:
-    runs-on: ubuntu-latest
-    steps:
-      - name: 🧾 Checkout
-        uses: actions/checkout@v4
-        with:
-          lfs: true
-          submodules: "recursive"
-          fetch-depth: 0 # So we can get all tags.
+  # build-linux:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: 🧾 Checkout
+  #       uses: actions/checkout@v4
+  #       with:
+  #         lfs: true
+  #         submodules: "recursive"
+  #         fetch-depth: 0 # So we can get all tags.
 
-      - uses: actions/setup-dotnet@v4
-        name: 💽 Setup .NET SDK
-        with:
-          # Use the .NET SDK from global.json in the root of the repository.
-          global-json-file: global.json
+  #     - uses: actions/setup-dotnet@v4
+  #       name: 💽 Setup .NET SDK
+  #       with:
+  #         # Use the .NET SDK from global.json in the root of the repository.
+  #         global-json-file: global.json
 
-      - name: 🌍 Install dependencies
-        run: dotnet restore
+  #     - name: 🌍 Install dependencies
+  #       run: dotnet restore
 
-      - name: 📦 Build for Linux
-        run: |
-          chmod +x ./build.sh
-          ./build.sh linux
+  #     - name: 📦 Build for Linux
+  #       run: |
+  #         chmod +x ./build.sh
+  #         ./build.sh linux
 
-      - name: ⬆️ Upload Linux artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: linux-artifacts
-          path: ./addons/platform/builds/linux
+  #     - name: ⬆️ Upload Linux artifacts
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: linux-artifacts
+  #         path: ./addons/platform/builds/linux
 
   # Project is shipped as GDExtension for GDScript users, and also as a nuget
   # package for C# scripting users.
@@ -219,48 +219,48 @@ jobs:
           name: nuget-artifact
           path: ${{ steps.package-path.outputs.package }}
 
-  consolidate-artifacts:
-    runs-on: ubuntu-latest
-    needs:
-      - build-macos
-      - build-windows
-      - build-linux
-    steps:
-      - name: 🧾 Checkout
-        uses: actions/checkout@v4
-        with:
-          lfs: true
-          submodules: "recursive"
-          fetch-depth: 0 # So we can get all tags.
+  # consolidate-artifacts:
+  #   runs-on: ubuntu-latest
+  #   needs:
+  #     - build-macos
+  #     - build-windows
+  #     - build-linux
+  #   steps:
+  #     - name: 🧾 Checkout
+  #       uses: actions/checkout@v4
+  #       with:
+  #         lfs: true
+  #         submodules: "recursive"
+  #         fetch-depth: 0 # So we can get all tags.
 
-      - name: Download macOS artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: macos-artifacts
-          path: ./addons/platform/builds/macos
+  #     - name: Download macOS artifacts
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: macos-artifacts
+  #         path: ./addons/platform/builds/macos
 
-      - name: Download Windows artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: windows-artifacts
-          path: ./addons/platform/builds/windows
+  #     - name: Download Windows artifacts
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: windows-artifacts
+  #         path: ./addons/platform/builds/windows
 
-      - name: Download Linux artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: linux-artifacts
-          path: ./addons/platform/builds/linux
+  #     - name: Download Linux artifacts
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: linux-artifacts
+  #         path: ./addons/platform/builds/linux
 
-      - name: Upload consolidated artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: platform
-          path: ./addons/platform
+  #     - name: Upload consolidated artifact
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: platform
+  #         path: ./addons/platform
 
   create-release:
     runs-on: ubuntu-latest
     needs:
-      - consolidate-artifacts
+      # - consolidate-artifacts
       - build-for-nuget
     steps:
       - name: 🧾 Checkout
@@ -291,11 +291,11 @@ jobs:
           godot-version: 1.0.0
           bump: ${{ inputs.bump }}
 
-      - name: Download GDExtension artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: platform
-          path: ./platform
+      # - name: Download GDExtension artifacts
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: platform
+      #     path: ./platform
 
       - name: Download nuget package artifact
         uses: actions/download-artifact@v4
@@ -310,18 +310,29 @@ jobs:
           echo "package=$package" >> "$GITHUB_OUTPUT"
           echo "📦 Found nuget package: $package"
 
-      - name: ✨ Create Release
+      # - name: ✨ Create Release with GDExtension and Nuget Package
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GH_BASIC }}
+      #   run: |
+      #     zip -r ./platform.zip ./platform
+
+      #     version="${{ steps.next-version.outputs.version }}"
+
+      #     NUGET_PKG="${{ steps.package-path.outputs.package }}"
+
+      #     gh release create --title "v$version" --generate-notes "$version" \
+      #       ./platform.zip "$NUGET_PKG"
+
+      - name: ✨ Create Release with Nuget Package
         env:
           GITHUB_TOKEN: ${{ secrets.GH_BASIC }}
         run: |
-          zip -r ./platform.zip ./platform
-
           version="${{ steps.next-version.outputs.version }}"
 
           NUGET_PKG="${{ steps.package-path.outputs.package }}"
 
           gh release create --title "v$version" --generate-notes "$version" \
-            ./platform.zip "$NUGET_PKG"
+            "$NUGET_PKG"
 
       - uses: actions/setup-dotnet@v4
         name: 💽 Setup .NET SDK

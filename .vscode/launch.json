@@ -12,7 +12,7 @@
       "preLaunchTask": "build",
       "program": "${env:GODOT}",
       "args": [],
-      "cwd": "${workspaceFolder}/sandbox/Chickensoft.Platform.Sandbox",
+      "cwd": "${workspaceFolder}/sandbox/Chickensoft.Platform.SandboxRef",
       "stopAtEntry": false,
       "console": "integratedTerminal"
     },
@@ -25,7 +25,7 @@
       "internalConsoleOptions": "openOnSessionStart",
       "pipeTransport": {
         "debuggerPath": "${extensionInstallFolder:muhammad-sammy.csharp}/.debugger/netcoredbg/netcoredbg",
-        "pipeCwd": "${workspaceFolder}/sandbox/Chickensoft.Platform.Sandbox",
+        "pipeCwd": "${workspaceFolder}/sandbox/Chickensoft.Platform.SandboxRef",
         "pipeProgram": "${env:GODOT}",
         "pipeArgs": [
           "--debug"
