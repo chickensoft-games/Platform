@@ -88,6 +88,6 @@
         nuget list -Source godot-dotnet -AllVersions -Prerelease
     -->
     <PackageReference Include="Godot.Bindings" Version="4.4.0-nightly.24509.1" />
-    <PackageReference Include="Godot.SourceGenerators" Version="4.4.0" />
+    <PackageReference Include="Godot.SourceGenerators" Version="4.4.1" />
   </ItemGroup>
 </Project>
