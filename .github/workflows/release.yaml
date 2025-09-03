@@ -187,7 +187,7 @@ jobs:
           godot-version: global.json
           bump: ${{ inputs.bump }}
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v5
         name: 💽 Setup .NET SDK
         with:
           # Use the .NET SDK from global.json in the root of the repository.
@@ -334,7 +334,7 @@ jobs:
           gh release create --title "v$version" --generate-notes "$version" \
             "$NUGET_PKG"
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v5
         name: 💽 Setup .NET SDK
         with:
           # Use the .NET SDK from global.json in the root of the repository.
