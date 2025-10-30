@@ -2,13 +2,15 @@ namespace Chickensoft.Platform.SandboxRef;
 
 using Godot;
 
-public partial class Main : Control {
+public partial class Main : Control
+{
   public const float THEME_SCALE = 4f;
   // When the resolution is the same as the theme design size, the theme should
   // be displayed without any scaling.
   public readonly Vector2I ThemeDesignSize = new(3840, 2160);
 
-  public override void _Ready() {
+  public override void _Ready()
+  {
     var displays = new Displays();
 
     var window = GetWindow();

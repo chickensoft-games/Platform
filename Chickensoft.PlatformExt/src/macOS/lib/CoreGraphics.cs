@@ -3,7 +3,8 @@ namespace Chickensoft.Platform.MacOS.Lib;
 using System;
 using System.Runtime.InteropServices;
 
-internal static partial class CoreGraphics {
+internal static partial class CoreGraphics
+{
 #pragma warning disable IDE1006 // Naming Styles
   public const string LIB_CORE_GRAPHICS =
     "/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics";

@@ -3,7 +3,8 @@ namespace Chickensoft.Platform.Windows;
 using System;
 using System.Runtime.InteropServices;
 
-internal static partial class User32 {
+internal static partial class User32
+{
   public const string USER32 = "user32.dll";
   public const int MONITOR_DEFAULTTONULL = 0x00000000;
   public const int MONITOR_DEFAULTTOPRIMARY = 0x00000001;
@@ -11,7 +12,8 @@ internal static partial class User32 {
 
 #pragma warning disable IDE1006 // Naming Styles
   [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-  public sealed class MonitorInfoEx {
+  public sealed class MonitorInfoEx
+  {
     public int cbSize;
     public Rect rcMonitor;
     public Rect rcWork;
@@ -19,7 +21,8 @@ internal static partial class User32 {
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
     public char[] szDevice;
 
-    public MonitorInfoEx() {
+    public MonitorInfoEx()
+    {
       cbSize = Marshal.SizeOf<MonitorInfoEx>();
       szDevice = new char[32];
     }
@@ -27,7 +30,8 @@ internal static partial class User32 {
 #pragma warning restore IDE1006 // Naming Styles
 
   [StructLayout(LayoutKind.Sequential)]
-  public struct Rect {
+  public struct Rect
+  {
     public int Left;
     public int Top;
     public int Right;

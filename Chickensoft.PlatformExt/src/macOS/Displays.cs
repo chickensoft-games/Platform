@@ -5,7 +5,8 @@ using Godot;
 using CG = Lib.CoreGraphics;
 using ObjC = Lib.ObjectiveC;
 
-internal static partial class Displays {
+internal static partial class Displays
+{
   /// <summary>
   /// Given a pointer to an NSWindow instance, find the CGDirectDisplayID it is
   /// on. Godot provides a method to get the NSWindow pointer of the
@@ -14,7 +15,8 @@ internal static partial class Displays {
   /// </summary>
   /// <param name="windowId">Godot window identifier. The CGDirectDisplayID of
   /// the display that the window is located on will be returned.</param>
-  public static uint GetCGDirectDisplayID(int windowId = 0) {
+  public static uint GetCGDirectDisplayID(int windowId = 0)
+  {
     var nativeHandle = DisplayServer
       .Singleton
       .WindowGetNativeHandle(DisplayServer.HandleType.WindowHandle, windowId);
@@ -52,16 +54,19 @@ internal static partial class Displays {
   /// <returns>A vector containing the width and height in physical pixels,
   /// or <see cref="Vector2I.Zero"/> if the resolution could not be determined.
   /// </returns>
-  public static Vector2I GetScreenResolution(uint displayId) {
+  public static Vector2I GetScreenResolution(uint displayId)
+  {
     var modes = CG.CGDisplayCopyAllDisplayModes(displayId, ObjC.NULL);
 
-    if (modes == ObjC.NULL) {
+    if (modes == ObjC.NULL)
+    {
       return Vector2I.Zero;
     }
 
     // Find the native display mode for the display.
     var modeCount = CG.CFArrayGetCount(modes);
-    for (var i = 0; i < modeCount; i++) {
+    for (var i = 0; i < modeCount; i++)
+    {
       var mode = CG.CFArrayGetValueAtIndex(modes, i);
 
       if (
@@ -69,7 +74,8 @@ internal static partial class Displays {
           CG.CGDisplayModeGetIOFlags(mode) &
           CG.kDisplayModeNativeFlag
         ) != 0
-      ) {
+      )
+      {
         // Native mode — extract physical pixel dimensions.
         var width = CG.CGDisplayModeGetPixelWidth(mode);
         var height = CG.CGDisplayModeGetPixelHeight(mode);

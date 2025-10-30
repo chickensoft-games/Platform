@@ -7,7 +7,8 @@ using Godot;
 #if GDEXTENSION
 [GodotClass]
 #endif
-public sealed partial class Displays : RefCounted {
+public sealed partial class Displays : RefCounted
+{
   /// <summary>
   /// Shared instance of the Displays class.
   /// </summary>
@@ -26,14 +27,17 @@ public sealed partial class Displays : RefCounted {
 #if GDEXTENSION
   [BindMethod]
 #endif
-  public float GetDisplayScaleFactor(Window window) {
+  public float GetDisplayScaleFactor(Window window)
+  {
     var id = window.GetWindowId();
 
-    if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
+    if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+    {
       return GetDisplayScaleFactorMacOS(window);
     }
 
-    else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+    else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+    {
       return GetDisplayScaleFactorWindows(window);
     }
 
@@ -49,15 +53,18 @@ public sealed partial class Displays : RefCounted {
 #if GDEXTENSION
   [BindMethod]
 #endif
-  public Vector2I GetNativeResolution(Window window) {
+  public Vector2I GetNativeResolution(Window window)
+  {
     var id = window.GetWindowId();
 
-    if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
+    if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+    {
       return MacOS.Displays.GetScreenResolution(
         MacOS.Displays.GetCGDirectDisplayID(id)
       );
     }
-    else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+    else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+    {
       return Windows.Monitors.GetMonitorResolution(
         Windows.Monitors.GetMonitorHandle(id)
       );
@@ -66,7 +73,8 @@ public sealed partial class Displays : RefCounted {
     return DisplayServer.Singleton.ScreenGetSize(window.CurrentScreen);
   }
 
-  private static float GetDisplayScaleFactorMacOS(Window window) {
+  private static float GetDisplayScaleFactorMacOS(Window window)
+  {
     // This will always be 1, 2, or 3, due to limited information from macOS.
     // This scale factor represents the type of retina display, but not the
     // user-adjusted logical resolution scaling. We can determine the actual
@@ -93,7 +101,8 @@ public sealed partial class Displays : RefCounted {
     return scaleFactor;
   }
 
-  private static float GetDisplayScaleFactorWindows(Window window) {
+  private static float GetDisplayScaleFactorWindows(Window window)
+  {
     var hMonitor = Windows.Monitors.GetMonitorHandle(window.GetWindowId());
 
     return Windows.Monitors.GetMonitorScale(hMonitor);

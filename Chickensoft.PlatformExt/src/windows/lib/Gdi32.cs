@@ -3,7 +3,8 @@ namespace Chickensoft.Platform.Windows;
 using System;
 using System.Runtime.InteropServices;
 
-internal static partial class Gdi32 {
+internal static partial class Gdi32
+{
   public const string GDI32 = "gdi32.dll";
   public const int DESKTOP_VERT_RES = 117;
   public const int DESKTOP_HORZ_RES = 118;

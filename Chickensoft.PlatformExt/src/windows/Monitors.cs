@@ -5,13 +5,15 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Godot;
 
-internal sealed class Monitors {
+internal sealed class Monitors
+{
   /// <summary>
   /// Gets the Win32 monitor handle of the monitor displaying the Godot window.
   /// </summary>
   /// <param name="godotWindowId">Godot window id.</param>
   /// <returns>Win32 monitor handle.</returns>
-  public static long GetMonitorHandle(int godotWindowId) {
+  public static long GetMonitorHandle(int godotWindowId)
+  {
     var nativeHandle = DisplayServer
       .Singleton
       .WindowGetNativeHandle(
@@ -29,7 +31,8 @@ internal sealed class Monitors {
   /// </summary>
   /// <param name="hMonitor">Win32 monitor handle.</param>
   /// <returns>Monitor scale factor.</returns>
-  public static float GetMonitorScale(long hMonitor) {
+  public static float GetMonitorScale(long hMonitor)
+  {
     // We need to get the DPI of the monitor itself, not the system DPI.
     // Windows 10+ only.
     var oldDpiAwareness = User32.SetThreadDpiAwarenessContext(
@@ -50,7 +53,8 @@ internal sealed class Monitors {
     return dpiY / 96f;
   }
 
-  public static Vector2I GetMonitorResolution(long hMonitor) {
+  public static Vector2I GetMonitorResolution(long hMonitor)
+  {
     var hMonitorPtr = new IntPtr(hMonitor);
     var monSize = Marshal.SizeOf<User32.MonitorInfoEx>();
     var pMonitorInfo = Marshal.AllocHGlobal(monSize);
@@ -58,7 +62,8 @@ internal sealed class Monitors {
     // We have to set the structure size first.
     Marshal.WriteInt32(pMonitorInfo, monSize);
 
-    if (!User32.GetMonitorInfo(hMonitorPtr, pMonitorInfo)) {
+    if (!User32.GetMonitorInfo(hMonitorPtr, pMonitorInfo))
+    {
       Debug.WriteLine(
         "Failed to get monitor info. Error Code: " +
           Marshal.GetLastWin32Error()
@@ -74,7 +79,8 @@ internal sealed class Monitors {
 
     var deviceChars = monitorInfo!.szDevice;
     var length = Array.IndexOf(deviceChars, '\0'); // stop at null terminator
-    if (length < 0) {
+    if (length < 0)
+    {
       length = deviceChars.Length;
     }
 
@@ -83,7 +89,8 @@ internal sealed class Monitors {
 
     // Create a device context for the monitor so we can use GDI api's.
     var hdc = Gdi32.CreateDC(null!, deviceName, null!, IntPtr.Zero);
-    if (hdc == IntPtr.Zero) {
+    if (hdc == IntPtr.Zero)
+    {
       Debug.WriteLine(
         "Failed to create device context. Error Code: " +
           Marshal.GetLastWin32Error()
@@ -91,13 +98,15 @@ internal sealed class Monitors {
       return Vector2I.Zero;
     }
 
-    try {
+    try
+    {
       // Actually get the monitor's native resolution :P
       var w = Gdi32.GetDeviceCaps(hdc, Gdi32.DESKTOP_HORZ_RES);
       var h = Gdi32.GetDeviceCaps(hdc, Gdi32.DESKTOP_VERT_RES);
       return new Vector2I(w, h).Abs();
     }
-    finally {
+    finally
+    {
       Gdi32.DeleteDC(hdc);
     }
   }
