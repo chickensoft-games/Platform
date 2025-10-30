@@ -3,7 +3,8 @@ namespace Chickensoft.Platform.MacOS.Lib;
 using System;
 using System.Runtime.InteropServices;
 
-internal static partial class ObjectiveC {
+internal static partial class ObjectiveC
+{
   public const string LIB_OBJ_C = "/usr/lib/libobjc.dylib";
   public const int NULL = 0;
 

@@ -4,9 +4,11 @@ using System;
 using System.Runtime.InteropServices;
 
 
-internal static partial class Shcore {
+internal static partial class Shcore
+{
   public const string SHCORE = "shcore.dll";
-  public enum DEVICE_SCALE_FACTOR {
+  public enum DEVICE_SCALE_FACTOR
+  {
     DEVICE_SCALE_FACTOR_INVALID = 0,
     SCALE_100_PERCENT = 100,
     SCALE_120_PERCENT = 120,
@@ -26,7 +28,8 @@ internal static partial class Shcore {
     SCALE_500_PERCENT = 500
   };
 
-  public enum MONITOR_DPI_TYPE {
+  public enum MONITOR_DPI_TYPE
+  {
     MDT_EFFECTIVE_DPI = 0,
     MDT_ANGULAR_DPI = 1,
     MDT_RAW_DPI = 2
