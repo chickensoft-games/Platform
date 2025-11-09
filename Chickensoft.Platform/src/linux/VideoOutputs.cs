@@ -28,7 +28,7 @@ internal static partial class VideoOutputs
   /// xrandr.</param>
   /// <param name="IsCurrent">Whether this output is currently active in
   /// xrandr.</param>
-  public record VideoOutput(
+  public sealed record VideoOutput(
     string Name,
     Vector2I LogicalResolution,
     Vector2I NativeResolution,
@@ -90,7 +90,7 @@ internal static partial class VideoOutputs
   // Group 4: width in mm
   // Group 5 logical height
   // Group 6 height in mm
-  // Group 7 output list (comma-separated) -- ignored in favor of output name
+  // Group 7 output list -- ignored in favor of output name
   [GeneratedRegex(@"^\s*\d+:\s+([+*]*)([A-Za-z0-9_.:-]+)\s+(\d+)\/(\d+)x(\d+)\/(\d+)\+\d+\+\d+\s+(.*)$")]
   private static partial Regex XRandRMonitorOutputRegex();
 
@@ -114,7 +114,7 @@ internal static partial class VideoOutputs
 
     outputs.Sort((a, b) =>
     {
-      // Compute relative errors (percentage-based)
+      // normalized errors
       var logicalErrorA = (double)((Vector2)
         ((a.LogicalResolution - logical) / logical)).LengthSquared();
       var logicalErrorB = (double)((Vector2)
@@ -131,12 +131,6 @@ internal static partial class VideoOutputs
 
     return outputs.FirstOrDefault();
   }
-
-
-  // Find the XRandR output that most closely matches the given logical
-  // resolution and DPI hint that the Godot display server provides. match may
-  // not be exact to either, so we can sort and do the math to find the one with
-  // the least error for both.
 
   /// <summary>
   /// Enumerates all active XRandR outputs by invoking
@@ -179,15 +173,15 @@ internal static partial class VideoOutputs
 
       var flags = match.Groups[1].Value;
       var name = match.Groups[2].Value; // DP-3, eDP-1, HDMI-A-1
-      var w = int.Parse(match.Groups[3].Value);
-      var mmw = int.Parse(match.Groups[4].Value);
-      var h = int.Parse(match.Groups[5].Value);
-      var mmh = int.Parse(match.Groups[6].Value);
+      var width = int.Parse(match.Groups[3].Value);
+      var physicalWidth = int.Parse(match.Groups[4].Value);
+      var height = int.Parse(match.Groups[5].Value);
+      var physicalHeight = int.Parse(match.Groups[6].Value);
 
       var isPreferred = flags.Contains('+');
       var isCurrent = flags.Contains('*');
 
-      var logical = new Vector2I(w, h);
+      var logical = new Vector2I(width, height);
 
       // fallback to logical resolution if we can't find native :(
       var native = GetNativeResolutionForXRandROutput(name) ?? logical;
@@ -196,7 +190,7 @@ internal static partial class VideoOutputs
         Name: name,
         LogicalResolution: logical,
         NativeResolution: native,
-        PhysicalSizeMm: new Vector2I(mmw, mmh),
+        PhysicalSizeMm: new Vector2I(physicalWidth, physicalHeight),
         IsPreferred: isPreferred,
         IsCurrent: isCurrent
       );
