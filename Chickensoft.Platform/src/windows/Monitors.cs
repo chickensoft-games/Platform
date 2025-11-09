@@ -39,12 +39,14 @@ internal sealed class Monitors
       User32.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
     );
 
+#pragma warning disable IDE0059
     Shcore.GetDpiForMonitor(
       new IntPtr(hMonitor),
       Shcore.MONITOR_DPI_TYPE.MDT_EFFECTIVE_DPI,
       out var dpiX,
       out var dpiY
     );
+#pragma warning restore IDE0059
 
     // Restore previous thread dpi awareness context, just to be safe.
     User32.SetThreadDpiAwarenessContext(oldDpiAwareness);

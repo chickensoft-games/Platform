@@ -162,5 +162,8 @@
       "icon": "terminal-powershell",
       "source": "PowerShell"
     }
-  }
+  },
+  "dotrush.roslyn.projectOrSolutionFiles": [
+    "/home/joanna/Dropbox/GameDev/Chickensoft/Platform/Chickensoft.Platform.sln"
+  ]
 }

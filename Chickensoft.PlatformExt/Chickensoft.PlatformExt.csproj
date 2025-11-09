@@ -82,6 +82,13 @@
   </Target>
 
   <ItemGroup>
+    <Compile Include="../Chickensoft.Platform/src/**/*.*">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </Compile>
+  </ItemGroup>
+
+
+  <ItemGroup>
     <!-- You can find all available packages from the godot-dotnet nuget -->
     <!-- source with the following command from this directory: -->
     <!--

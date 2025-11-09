@@ -39,12 +39,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="../Chickensoft.PlatformExt/src/**/*.*">
-      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
     <!-- Dependencies go here. -->
     <PackageReference Include="IsExternalInit" Version="1.0.3">
       <PrivateAssets>all</PrivateAssets>
