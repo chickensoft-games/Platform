@@ -5,7 +5,10 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Godot;
 
-internal sealed class Monitors
+/// <summary>
+/// Windows-specific display detection utilities.
+/// </summary>
+internal static class Monitors
 {
   /// <summary>
   /// Gets the Win32 monitor handle of the monitor displaying the Godot window.

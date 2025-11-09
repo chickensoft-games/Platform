@@ -9,9 +9,9 @@ using Chickensoft.Platform.Utils;
 using Godot;
 
 /// <summary>
-/// Linux-specific video output utilities.
+/// Linux-specific display detection utilities.
 /// </summary>
-public static partial class VideoOutputs
+internal static partial class VideoOutputs
 {
   /// <summary>
   /// Represents a video output on linux. The video output data is inferred from
