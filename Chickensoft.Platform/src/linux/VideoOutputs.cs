@@ -94,6 +94,10 @@ internal static partial class VideoOutputs
   [GeneratedRegex(@"^\s*\d+:\s+([+*]*)([A-Za-z0-9_.:-]+)\s+(\d+)\/(\d+)x(\d+)\/(\d+)\+\d+\+\d+\s+(.*)$")]
   private static partial Regex XRandRMonitorOutputRegex();
 
+  // matches things like "card0-HDMI-A-1" or "card1-eDP-1"
+  [GeneratedRegex(@"^card\d+-(.+)$")]
+  private static partial Regex DrmOutputNameRegex();
+
   /// <summary>
   /// Gets the video output most likely to be the one that matches the given
   /// logical resolution and DPI. This should generally allow us to resolve the
@@ -199,14 +203,19 @@ internal static partial class VideoOutputs
     yield break;
   }
 
-  // xrOutput is something like "DP-3"
+  // poke through sys/class/drm to find the native resolution of the video
+  // output that most closely matches the xrandr output name
   private static Vector2I? GetNativeResolutionForXRandROutput(string xrOutput)
   {
-    // everything is a file in linux
     foreach (var dir in Directory.GetDirectories("/sys/class/drm", "card*-*"))
     {
-      var name = Path.GetFileName(dir); // e.g., card1-DP-3
-      if (!name.EndsWith("-" + xrOutput, StringComparison.Ordinal))
+      var drmPath = Path.GetFileName(dir);
+
+      if
+      (
+        GetDrmOutputName(drmPath) is not { } drmConnector ||
+        !OutputMatches(xrOutput, drmConnector)
+      )
       {
         continue;
       }
@@ -214,7 +223,6 @@ internal static partial class VideoOutputs
       var preferred = ReadFile(dir, "modes")
         .Split('\n').FirstOrDefault()?.Trim(); // string like "3840x2160"
 
-      // extract width and height
       if (preferred is null)
       {
         continue;
@@ -227,14 +235,66 @@ internal static partial class VideoOutputs
         continue;
       }
 
-      if (int.TryParse(parts[0], out var width) &&
-          int.TryParse(parts[1], out var height))
+      if
+      (
+        int.TryParse(parts[0], out var width) &&
+        int.TryParse(parts[1], out var height)
+      )
       {
         return new Vector2I(width, height);
       }
     }
 
     return null;
+  }
+
+  private static string? GetDrmOutputName(string drmPath)
+  {
+    var match = DrmOutputNameRegex().Match(drmPath);
+    return match.Success ? match.Groups[1].Value : null;
+  }
+
+  // xrandr and drm output names can differ slightly. drm outputs often have
+  // an extra segment like "HDMI-A-1" vs "HDMI-1". This function attempts to
+  // match them based on base name and trailing number alone.
+  private static bool OutputMatches(string xrOutput, string drmOutput)
+  {
+    if (xrOutput == drmOutput)
+    {
+      return true;
+    }
+
+    var xrandrParts = xrOutput.Split('-');
+    var drmParts = drmOutput.Split('-');
+
+    if (xrandrParts.Length < 2 || drmParts.Length < 2)
+    {
+      // both must have a base and number
+      return false;
+    }
+
+    var xrandrBase = xrandrParts[0];
+    var drmBase = drmParts[0];
+
+    // get trailing numbers
+    if (
+      !int.TryParse(xrandrParts[^1], out var xrandrNumber) ||
+      !int.TryParse(drmParts[^1], out var drmNumber)
+    )
+    {
+      return false;
+    }
+
+    if
+    (
+      string.Equals(xrandrBase, drmBase, StringComparison.Ordinal) &&
+      xrandrNumber == drmNumber
+    )
+    {
+      return true;
+    }
+
+    return false;
   }
 
   private static string ReadFile(string dir, string file)
