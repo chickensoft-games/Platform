@@ -1,5 +1,6 @@
 namespace Chickensoft.Platform;
 
+using System;
 using System.Runtime.InteropServices;
 using Godot;
 
@@ -29,8 +30,6 @@ public sealed partial class Displays : RefCounted
 #endif
   public float GetDisplayScaleFactor(Window window)
   {
-    var id = window.GetWindowId();
-
     if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
     {
       return GetDisplayScaleFactorMacOS(window);
@@ -39,6 +38,10 @@ public sealed partial class Displays : RefCounted
     else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
     {
       return GetDisplayScaleFactorWindows(window);
+    }
+    else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+    {
+      return GetDisplayScaleFactorLinux(window);
     }
 
     return DisplayServer.Singleton.ScreenGetScale(window.CurrentScreen);
@@ -69,6 +72,14 @@ public sealed partial class Displays : RefCounted
         Windows.Monitors.GetMonitorHandle(id)
       );
     }
+    else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+    {
+      return GetLinuxVideoOutputResult(
+        window,
+        output => output.NativeResolution,
+        DisplayServer.Singleton.ScreenGetSize(window.CurrentScreen)
+      );
+    }
 
     return DisplayServer.Singleton.ScreenGetSize(window.CurrentScreen);
   }
@@ -96,7 +107,7 @@ public sealed partial class Displays : RefCounted
       Mathf.RoundToInt(logicalResolutionRetina.Y / retinaScale)
     );
 
-    var scaleFactor = (float)nativeResolution.Y / logicalResolution.Y;
+    var scaleFactor = ComputeScaleFactor(logicalResolution, nativeResolution);
 
     return scaleFactor;
   }
@@ -107,4 +118,47 @@ public sealed partial class Displays : RefCounted
 
     return Windows.Monitors.GetMonitorScale(hMonitor);
   }
+
+  private static float GetDisplayScaleFactorLinux(Window window) =>
+    GetLinuxVideoOutputResult(
+      window,
+      output => ComputeScaleFactor(
+        DisplayServer.Singleton.ScreenGetSize(window.CurrentScreen),
+        output.NativeResolution
+      ),
+      1f
+    );
+
+  private static T GetLinuxVideoOutputResult<T>
+  (
+    Window window,
+    Func<VideoOutputs.VideoOutput, T> selector,
+    T defaultValue
+  ) where T : struct
+  {
+    var logicalResolution =
+      DisplayServer.Singleton.ScreenGetSize(window.CurrentScreen);
+
+    var dpi =
+      DisplayServer.Singleton.ScreenGetDpi(window.CurrentScreen);
+
+    var output = VideoOutputs.GetLikelyVideoOutput(logicalResolution, dpi);
+
+    if (output is null)
+    {
+      GD.PushWarning
+      (
+        "[Chickensoft.Platform]: Could not determine the likely video output " +
+        "on Linux for the monitor with the logical resolution " +
+        logicalResolution + " and DPI " + dpi + "."
+      );
+
+      return defaultValue;
+    }
+
+    return selector(output);
+  }
+
+  private static float ComputeScaleFactor(Vector2I logical, Vector2I native) =>
+    (float)logical.Y / native.Y;
 }

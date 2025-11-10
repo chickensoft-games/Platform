@@ -413,3 +413,5 @@ dotnet_diagnostic.IDE0010.severity = none
 dotnet_diagnostic.IDE0062.severity = warning
 # Don't make me use properties if I don't want to.
 dotnet_diagnostic.IDE0032.severity = none
+# Leave me alone about culture when parsing an int :P
+dotnet_diagnostic.CA1305.severity = none

@@ -5,7 +5,10 @@ using Godot;
 using CG = Lib.CoreGraphics;
 using ObjC = Lib.ObjectiveC;
 
-internal static partial class Displays
+/// <summary>
+/// macOS-specific display detection utilities.
+/// </summary>
+internal static class Displays
 {
   /// <summary>
   /// Given a pointer to an NSWindow instance, find the CGDirectDisplayID it is

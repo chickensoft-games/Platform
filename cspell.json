@@ -66,6 +66,7 @@
     "lightmapper",
     "lihop",
     "linecoverage",
+    "listactivemonitors",
     "lpmi",
     "maccatalyst",
     "Mathf",
@@ -115,6 +116,7 @@
     "vorbis",
     "voxel",
     "vulkan",
+    "xrandr",
     "XRIP",
     "Xunit"
   ]
