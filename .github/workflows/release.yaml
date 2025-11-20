@@ -163,7 +163,7 @@ jobs:
       DOTNET_NOLOGO: true
     steps:
       - name: 🧾 Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           lfs: true
           submodules: "recursive"
@@ -264,7 +264,7 @@ jobs:
       - build-for-nuget
     steps:
       - name: 🧾 Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           token: ${{ secrets.GH_BASIC }}
           lfs: true
